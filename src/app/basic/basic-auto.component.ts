@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ColumnMode } from 'projects/swimlane/ngx-datatable/src/public-api';
+import { ColumnMode, SelectionType } from 'projects/swimlane/ngx-datatable/src/public-api';
 
 @Component({
   selector: 'basic-auto-demo',
@@ -26,6 +26,11 @@ import { ColumnMode } from 'projects/swimlane/ngx-datatable/src/public-api';
         [footerHeight]="50"
         rowHeight="auto"
         [reorderable]="reorderable"
+        [limit]="20"
+        [selected]="selected"
+        [selectionType]="SelectionType.single"
+        (activate)="onActivate($event)"
+        (select)="onSelect($event)"
       >
       </ngx-datatable>
     </div>
@@ -36,9 +41,18 @@ export class BasicAutoComponent {
   loadingIndicator = true;
   reorderable = true;
 
-  columns = [{ prop: 'name' }, { name: 'Gender' }, { name: 'Company', sortable: false }];
+  columns = [
+    { prop: 'Card' },
+    { prop: 'Description' },
+    { prop: 'Chargeback Amount' },
+    { prop: 'Status code' },
+    { prop: 'Currency of Chargeback' }
+  ];
 
   ColumnMode = ColumnMode;
+  SelectionType = SelectionType;
+
+  selected = [];
 
   constructor() {
     this.fetch(data => {
@@ -49,9 +63,17 @@ export class BasicAutoComponent {
     });
   }
 
+  onSelect({ selected }) {
+    console.log('Select Event', selected, this.selected);
+  }
+
+  onActivate(event) {
+    console.log('Activate Event', event);
+  }
+
   fetch(cb) {
     const req = new XMLHttpRequest();
-    req.open('GET', `assets/data/company.json`);
+    req.open('GET', `assets/data/transaction_list.json`);
 
     req.onload = () => {
       cb(JSON.parse(req.response));
